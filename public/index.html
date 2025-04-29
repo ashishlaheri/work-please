@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dynamic Storage App</title>
+</head>
+<body>
+  <h1>Upload a File to Azure Storage</h1>
+  
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" name="file" required>
+    <button type="submit">Upload</button>
+  </form>
+
+  <h2>Files in Storage:</h2>
+  <ul id="fileList"></ul>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      
+      const response = await fetch('/upload', {
+        method: 'POST',
+        body: formData
+      });
+      
+      alert(await response.text());
+      loadFiles();
+    });
+
+    async function loadFiles() {
+      const response = await fetch('/files');
+      const files = await response.json();
+      const fileList = document.getElementById('fileList');
+      fileList.innerHTML = '';
+      files.forEach(file => {
+        const li = document.createElement('li');
+        li.textContent = file;
+        fileList.appendChild(li);
+      });
+    }
+
+    loadFiles();
+  </script>
+</body>
+</html>

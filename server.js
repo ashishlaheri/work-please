@@ -7,10 +7,6 @@ const app = express();
 const upload = multer({ dest: 'uploads/' });
 
 const port = process.env.PORT || 8080;
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Server running on port ${port}`);
-});
-
 
 // Connect to Azure Storage
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
@@ -27,7 +23,6 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
   await blockBlobClient.uploadFile(req.file.path);
-
   res.send('File uploaded successfully to Azure Storage!');
 });
 
@@ -40,6 +35,7 @@ app.get('/files', async (req, res) => {
   res.json(fileList);
 });
 
-app.listen(port, () => {
+// ✅ Only ONE listener — required for Azure
+app.listen(port, '0.0.0.0', () => {
   console.log(`Server running on port ${port}`);
 });

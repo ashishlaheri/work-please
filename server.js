@@ -6,7 +6,11 @@ require('dotenv').config();
 const app = express();
 const upload = multer({ dest: 'uploads/' });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on port ${port}`);
+});
+
 
 // Connect to Azure Storage
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;

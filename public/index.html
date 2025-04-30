@@ -85,32 +85,38 @@
   </div>
 
   <script>
-    document.getElementById('uploadForm').addEventListener('submit', async function(event) {
-      event.preventDefault();
-      const formData = new FormData(this);
-      
-      const response = await fetch('/upload', {
-        method: 'POST',
-        body: formData
-      });
-      
-      alert(await response.text());
-      loadFiles();
+  document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    
+    const response = await fetch('/upload', {
+      method: 'POST',
+      body: formData
     });
-
-    async function loadFiles() {
-      const response = await fetch('/files');
-      const files = await response.json();
-      const fileList = document.getElementById('fileList');
-      fileList.innerHTML = '';
-      files.forEach(file => {
-        const li = document.createElement('li');
-        li.textContent = file;
-        fileList.appendChild(li);
-      });
-    }
-
+    
+    alert(await response.text());
     loadFiles();
-  </script>
+  });
+
+  async function loadFiles() {
+    const response = await fetch('/files');
+    const files = await response.json();
+    const fileList = document.getElementById('fileList');
+    fileList.innerHTML = '';
+
+    files.forEach(file => {
+      const li = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = file.url;
+      link.textContent = file.name;
+      link.target = '_blank'; // opens in new tab
+      li.appendChild(link);
+      fileList.appendChild(li);
+    });
+  }
+
+  loadFiles();
+</script>
+
 </body>
 </html>

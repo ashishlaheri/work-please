@@ -26,14 +26,24 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   res.send('File uploaded successfully to Azure Storage!');
 });
 
-// List files
+// List files with download URLs
 app.get('/files', async (req, res) => {
-  let fileList = [];
-  for await (const blob of containerClient.listBlobsFlat()) {
-    fileList.push(blob.name);
+  try {
+    const fileList = [];
+    for await (const blob of containerClient.listBlobsFlat()) {
+      const blockBlobClient = containerClient.getBlockBlobClient(blob.name);
+      fileList.push({
+        name: blob.name,
+        url: blockBlobClient.url
+      });
+    }
+    res.json(fileList);
+  } catch (error) {
+    console.error('Error listing blobs:', error.message);
+    res.status(500).send('Failed to retrieve file list');
   }
-  res.json(fileList);
 });
+
 
 // ✅ Only ONE listener — required for Azure
 app.listen(port, '0.0.0.0', () => {
